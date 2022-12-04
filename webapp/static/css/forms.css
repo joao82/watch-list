@@ -1,0 +1,104 @@
+.form {
+  margin: 0 auto;
+  max-width: 30rem;
+  border: var(--border);
+  font-size: 1.2rem;
+  background: var(--background-color);
+  box-shadow: 0.75rem 0.75rem 0 -0.3rem var(--accent-colour);
+}
+
+.form_container {
+  padding: 2.5rem 1.5rem 1.5rem 1.5rem;
+}
+
+@media screen and (min-width: 24.75em) {
+  .form_container {
+    padding-left: 2rem;
+  }
+}
+
+@media screen and (min-width: 30em) {
+  .form_container {
+    padding-left: 2.5rem;
+  }
+}
+
+.form_group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+.form_label {
+  margin-bottom: 0.5rem;
+}
+
+.form_field {
+  outline: 0.5px solid black;
+  border: 0.5px solid black;
+  border-bottom: 3px solid black;
+  font-size: inherit;
+  font-family: inherit;
+  padding: 0.75rem 0.5rem;
+  background: var(--background-color);
+}
+
+.form_field:focus {
+  border-bottom: var(--border);
+}
+
+.container-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form_small {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  width: max-content;
+}
+
+.form_link {
+  text-decoration: none;
+  color: var(--accent-colour);
+}
+
+.form_link:hover {
+  color: #d05656;
+}
+
+.button--form {
+  margin: 2rem auto 1rem;
+  padding: 0.75rem 3rem;
+  border: none;
+  background: var(--background-color);
+}
+
+.button--form:hover {
+  background: var(--background-color-hover);
+}
+
+.form_error {
+  margin-top: 0.5rem;
+}
+
+.form_error,
+.form_flash {
+  display: block;
+  padding: 0.5rem;
+  color: var(--text);
+}
+
+.form_error,
+.form_flash--danger {
+  background: var(--accent-colour);
+}
+
+.form_flash {
+  margin: 0.5rem;
+}
+
+.form_flash--success {
+  background: var(--accent-colour-2);
+}

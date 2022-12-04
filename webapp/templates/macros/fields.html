@@ -1,0 +1,16 @@
+{% macro render_text_field(field) %}
+
+<div class="form_group">
+  {{ field.label(class_="form_label") }} {{ field(class_="form_field",
+  id="{{field}}") }} {% for error in field.errors %}
+  <span class="form_error">{{ error }}</span>
+  {% endfor %}
+</div>
+{% endmacro %} {% macro render_area_field(field) %}
+<div class="form_group">
+  {{ field.label(class_="form_label") }} {{ field(rows=4, class_="form_field",
+  style="resize: none") }} {% for error in field.errors %}
+  <span class="form_error">{{ error }}</span>
+  {% endfor %}
+</div>
+{% endmacro %}

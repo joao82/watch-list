@@ -1,0 +1,6 @@
+migrations
+venv
+app.db
+*.pyc
+.env
+.DS_Store

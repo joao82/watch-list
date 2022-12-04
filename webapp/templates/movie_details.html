@@ -1,0 +1,90 @@
+{% from "macros/svgs.html" import star, pencil, add, delete %}
+
+{% extends "layout.html" %}
+
+{%- block head_content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/movie_details.css') }}" />
+{% endblock %}
+
+{% block main_content %}
+<div class="container">
+    <header class="movie_header">
+        <div class="header_row">
+            <div class="movie_name">
+                <h1>{{ movie.title }}</h1>
+                <div class="movie_rating">
+                    {% for i in range(5) %}
+                        <a class="rating_link" href="{{ url_for('movie.rate_movie', movie_id=movie.id, new_rating=i+1) }}">
+                            {{ star("star " + ("star--filled" if movie.rating > i else "")) }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="movie_watched">
+                {% if movie.last_seen %}
+                    <p>
+                        Last watched: <a href="{{ url_for('movie.watch_today', movie_id=movie.id) }}" class="watched_link">
+                            <time datetime="{{ movie.last_seen }}">{{movie.last_seen.strftime("%d %b %Y")}}</time>
+                        </a>
+                    </p>
+                {% else %}
+                    <p><a href="{{ url_for('movie.watch_today', movie_id=movie.id) }}" class="watched_link">Not watched yet</a></p>
+                {% endif %}
+                <a class="movie_edit" href="{{ url_for('movie.edit_movie', movie_id=movie.id) }}">Edit {{ pencil("pencil") }}</a>
+            </div>
+        </div>
+        <div class="header_row">
+            {% if tags %}
+            <ul class="movie_tags">
+                {% for tag in tags %}
+                <li class="movie_tag">
+                    <a  onclick="return confirm('Are you sure you want to delete this tag?');" 
+                        href="{{ url_for('movie.delete_tag', tag_id=tag.id) }}" 
+                        class="tag_delete">{{ tag.tag }}</a></li>
+            {% endfor %}
+            </ul>
+            <a class="tag_add" href="{{ url_for('movie.add_tags', movie_id=movie.id) }}">Add  {{ add("add") }}</a>
+            {% endif %}
+        </div>
+    </header>
+    {% if movie.video_link %}
+    <iframe
+        class="movie_video"
+        src="{{ movie.video_link }}"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+    </iframe>
+    {% endif %}
+
+    {% if movie.description %}
+        <p class="movie_description">{{ movie.description }}</p>
+    {% else %}
+        <p class="movie_description">No description yet. <a class="link" href="{{ url_for('movie.edit_movie', movie_id=movie.id) }}">Add one?</a></p>
+    {% endif %}
+    
+    <div class="movie_meta">
+        {% if cast %}
+            <div class="movie_casting">
+                <h2>Casting</h2>
+                <ul class="list">
+                {% for actor in cast %}
+                    <li class="list_item">{{ actor.actor }}</li>
+                {% endfor %}
+                <ul>
+            </div>
+        {% endif %}
+        {% if series %}
+        <div class="movie_series">
+            <h2>Series</h2>
+            <ul class="list">
+            {% for movie_in_series in series %}
+                <li class="list_item"><p class="list_item_box">{{ movie_in_series.series }}</p></li>
+            {% endfor %}
+            <ul>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

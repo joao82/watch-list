@@ -1,0 +1,60 @@
+{% from "macros/svgs.html" import moon, sun %} {% macro header(current_user,
+theme) %}
+
+<header class="header">
+  <div class="nav-container">
+    <a href="{{ url_for('movie.index') }}" class="header_logo">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="logo_icon"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
+        />
+      </svg>
+      <span class="logo_name">Watchlist</span>
+    </a>
+    <nav class="nav">
+      {% if current_user.is_authenticated %}
+      <a
+        href="{{ url_for('movie.index') }}"
+        class="nav_link {{ 'nav_link--active' if request.path == url_for('movie.index') }}"
+      >
+        <span class="nav_item">Movies</span>
+      </a>
+      <a href="{{ url_for('auth.logout') }}" class="nav_link">
+        <span class="nav_item">Log out</span>
+      </a>
+      {% else %}
+      <a
+        href="{{ url_for('auth.login') }}"
+        class="nav_link {{ 'nav_link--active' if request.path == url_for('auth.login') }}"
+      >
+        <span class="nav_item">Log in</span>
+      </a>
+      <a
+        href="{{ url_for('auth.register') }}"
+        class="nav_link {{ 'nav_link--active' if request.path == url_for('auth.register') }}"
+      >
+        <span class="nav_item">Register</span>
+      </a>
+      {% endif %}
+      <a
+        href="{{ url_for('movie.toggle_theme', current_page=request.path) }}"
+        class="nav_link"
+      >
+        <span class="nav_item">
+          {% if theme == "dark" %} {{ sun("nav_icon") }} {% else %} {{
+          moon("nav_icon") }} {% endif %}
+        </span>
+      </a>
+    </nav>
+  </div>
+</header>
+{% endmacro %}

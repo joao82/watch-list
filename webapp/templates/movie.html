@@ -1,0 +1,51 @@
+{% extends "layout.html" %} {% block head_content %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/movies.css') }}"
+/>
+{% endblock %} {% block main_content %} {%- if movies_data %}
+<table class="table">
+  <colgroup>
+    <col style="width: 60%" />
+    <col style="width: 25%" />
+    <col style="width: 15%" />
+  </colgroup>
+  <thead>
+    <tr class="table__header">
+      <th class="table_cell table_cell--header">Title</th>
+      <th class="table_cell table_cell--header">Release Date</th>
+      <th class="table_cell table_cell--header"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for movie in movies_data %}
+    <tr>
+      <td class="table_cell">
+        <p class="table_movieTitle">{{ movie.title }}</p>
+        <p class="table_movieDirector">By {{ movie.director }}</p>
+      </td>
+      <td class="table_cell">{{ movie.year }}</td>
+      <td class="table_cell">
+        <a
+          href="{{ url_for('movie.movie', movie_id=movie.id) }}"
+          class="table_link"
+          >View</a
+        >
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% else %}
+<p class="table_empty">
+  You haven't added any movies yet.
+  <a href="{{ url_for('movie.add_movie') }}" class="link">Add one!</a>
+</p>
+{% endif %}
+
+<a href="{{ url_for('movie.add_movie') }}" class="button button--add">
+  <span>+</span>
+</a>
+
+{% endblock %}
