@@ -1,7 +1,7 @@
 import datetime
 from webapp import db
 from flask_login import current_user, login_required
-from flask import Blueprint, redirect, render_template, session, url_for, request, flash
+from flask import Blueprint, redirect, render_template, session, url_for, request, flash, abort
 from webapp.movie.forms import MovieForm, EditMovieForm, AddTagsForm
 from webapp.models import Movie, User, Tag, Cast, Series
 
@@ -138,3 +138,8 @@ def toggle_theme():
         session["theme"] = "dark"
 
     return redirect(request.args.get("current_page"))
+
+
+@bp.errorhandler(404)
+def page_not_found(error):
+    return render_template("404.html"), 404

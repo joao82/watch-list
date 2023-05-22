@@ -60,8 +60,7 @@ class MovieForm(FlaskForm):
         "Year",
         validators=[
             InputRequired(),
-            NumberRange(
-                min=1878, message="Please enter a year in the format YYYY."),
+            NumberRange(min=1878, message="Please enter a year in the format YYYY."),
         ],
     )
 

@@ -1,6 +1,6 @@
 ## ⭐ Movie Watch List App ⭐
 
-This repository contains a project developed as an assignment on the **"Web Developer Bootcamp with Flask and Python in 2023"** by **Teclado**, built using **HTML5, CSS3, Javascript, PostgreSQl Flask and Python**.
+This repository contains a project developed as an assignment on the **"Web Developer Bootcamp with Flask and Python in 2023"** by **Teclado**, built using **HTML5, CSS3, Javascript, PostgreSQl, Flask and Python**.
 
 ## 🔗 Live URL: <a href="https://pymovie.joao-martins.net/">🍿 Movie Watch List 🎬</a>
 
@@ -22,7 +22,7 @@ This repository contains a project developed as an assignment on the **"Web Deve
 
 ## 🔑 Feature
 
-- Display all the movies stored on the database as a list.
+- Display all movies stored on the database as a list.
 - Display all the information for a selected movie such as Title, Rating, date watched, short video, cast, production, tags.
 - Rating a movie.
 - User can upload own movies to the watch list.
@@ -37,6 +37,10 @@ This repository contains a project developed as an assignment on the **"Web Deve
 - As a user I want to be able to `rating and categorize the movies that I saw`, so that I can search for categories.
 - As a user I want to `record the day I saw a movie`, so that I can track when I saw the movies.
 - As a user I want to `see all the movies in a watch list`, so that I have track of what movies I saw and the ones I still need to see.
+
+## 📡 Architecture
+
+![Screenshot](./src/img/architecture.png?raw=true "App Architecture")
 
 ## 🏆 What I learnt
 
