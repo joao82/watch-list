@@ -18,7 +18,7 @@ This repository contains a project developed as an assignment on the **"Web Deve
 
 ## 📸 Overview
 
-![Screenshot](./src/img/pymovie.gif?raw=true "Movie Watch List App")
+![Screenshot](./webapp/static/img/pymovie.gif?raw=true "Movie Watch List App")
 
 ## 🔑 Feature
 
