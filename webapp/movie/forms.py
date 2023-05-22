@@ -1,7 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import (IntegerField, StringField,
-                     SubmitField, TextAreaField, URLField)
-from wtforms.validators import (InputRequired, NumberRange)
+from wtforms import IntegerField, StringField, SubmitField, TextAreaField, URLField
+from wtforms.validators import InputRequired, NumberRange
 
 
 class StringListField(TextAreaField):
@@ -22,13 +21,11 @@ class StringListField(TextAreaField):
 class MovieForm(FlaskForm):
     title = StringField("Title", validators=[InputRequired()])
     director = StringField("Director", validators=[InputRequired()])
-
     year = IntegerField(
         "Year",
         validators=[
             InputRequired(),
-            NumberRange(
-                min=1878, message="Please enter a year in the format YYYY."),
+            NumberRange(min=1878, message="Please enter a year in the format YYYY."),
         ],
     )
     cast = StringListField("Cast")
@@ -36,7 +33,6 @@ class MovieForm(FlaskForm):
     tags = StringListField("Tags")
     description = TextAreaField("Description")
     video_link = URLField("Video link")
-
     submit = SubmitField("Add Movie")
 
 
@@ -46,11 +42,9 @@ class EditMovieForm(MovieForm):
     year = IntegerField("Year")
     description = TextAreaField("Description")
     video_link = URLField("Video link")
-
     submit = SubmitField("Submit")
 
 
 class AddTagsForm(FlaskForm):
     tags = StringListField("Tags")
-
     submit = SubmitField("Submit")
