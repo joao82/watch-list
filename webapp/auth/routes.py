@@ -7,6 +7,21 @@ from .forms import LoginForm, RegisterForm
 bp = Blueprint("auth", __name__, template_folder="templates", static_folder="static")
 
 
+@bp.errorhandler(404)
+def page_not_found(error):
+    return render_template("404.html"), 404
+
+
+@bp.errorhandler(500)
+def internal_error(error):
+    return render_template("500.html"), 500
+
+
+@bp.errorhandler(403)
+def page_forbidden(e):
+    return render_template("403.html"), 500
+
+
 @bp.route("/register", methods=["POST", "GET"])
 def register():
     if current_user.is_authenticated:
@@ -36,8 +51,9 @@ def login():
         if user is None or not user.check_password(form.password.data):
             flash("Login credentials not correct", category="danger")
             return redirect(url_for("auth.login"))
-
-        login_user(user, remember=True)
+        else:
+            login_user(user, remember=True)
+            flash("Login successful", "success")
         return redirect(url_for("movie.index"))
 
     return render_template("login.html", title="Movies Watchlist - Login", form=form)

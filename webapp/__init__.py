@@ -4,6 +4,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
+import logging
 
 
 db = SQLAlchemy()
@@ -16,6 +17,11 @@ login.login_message = "Please login to access this page"
 def create_app(config_class=DevelopmentConfig):
     app = Flask(__name__)
     app.config.from_object(config_class)
+    # logging.basicConfig(
+    #     filename="error.log",
+    #     level=logging.DEBUG,
+    #     format="%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s",
+    # )
 
     @app.before_first_request
     def create_tables():

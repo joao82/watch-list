@@ -3,7 +3,21 @@
   rel="stylesheet"
   href="{{ url_for('static', filename='css/movies.css') }}"
 />
-{% endblock %} {% block main_content %} {%- if movies_data %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/forms.css') }}"
+/>
+{% endblock %} {% block main_content %} {% if movies_data %}
+
+{% with messages = get_flashed_messages(with_categories=true) %} {% if
+messages %}
+<ul class="flashes">
+  {% for category, message in messages %}
+  <span class="form_flash form_flash--{{category}}"> {{ message }}</span>
+  {% endfor %}
+</ul>
+{% endif %} {% endwith %}
+
 <table class="table">
   <colgroup>
     <col style="width: 60%" />

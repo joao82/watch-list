@@ -3,6 +3,14 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from webapp import db, login
 
 
+class NotFoundError(Exception):
+    pass
+
+
+class NotAuthorizedError(Exception):
+    pass
+
+
 class User(UserMixin, db.Model):
     __table_name__ = "user"
 
