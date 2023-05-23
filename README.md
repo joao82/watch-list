@@ -2,7 +2,7 @@
 
 This repository contains a project developed as an assignment on the **"Web Developer Bootcamp with Flask and Python in 2023"** by **Teclado**, built using **HTML5, CSS3, Javascript, PostgreSQl, Flask and Python**.
 
-## 🔗 Live URL: <a href="https://pymovie.joao-martins.net/">🍿 Movie Watch List 🎬</a>
+## 🔗 Live URL: <a href="https://movie-list-vuxm.onrender.com">🍿 Movie Watch List 🎬</a>
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/1c7a3caa-d0f7-4e66-af82-49c8f6b5eed3/deploy-status)](https://app.netlify.com/sites/pymovie-joao/deploys)
 
