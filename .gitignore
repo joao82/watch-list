@@ -1,6 +1,7 @@
 migrations
 venv
 app.db
+test.db
 *.pyc
 .env
 .DS_Store

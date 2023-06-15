@@ -1,6 +1,8 @@
+from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 from webapp import db, login
+from typing import Optional
 
 
 class NotFoundError(Exception):
@@ -14,25 +16,35 @@ class NotAuthorizedError(Exception):
 class User(UserMixin, db.Model):
     __table_name__ = "user"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String(100), index=True, unique=True, nullable=False)
     password = db.Column(db.String(300), nullable=False)
+    registered_on = db.Column(db.DateTime(timezone=True), nullable=False)
     movie = db.relationship("Movie", backref="user", lazy="dynamic")
 
+    def __init__(self, email: str, password_plaintext: str, method: str = "sha256"):
+        """Create a new User object using the email address and hashing the
+        plaintext password using Werkzeug.Security.
+        """
+        self.email = email
+        self.password = self._generate_password_hash(password_plaintext, method=method)
+        self.registered_on = datetime.now()
+
     def __repr__(self):
-        return f"<id: {self.id}, email: {self.email}"
+        return f"<User: {self.email}"
 
-    def set_password(self, password):
-        self.password = generate_password_hash(password, method="sha256")
+    @staticmethod
+    def _generate_password_hash(password_plaintext: str, method: str = "sha256"):
+        return generate_password_hash(password_plaintext, method=method)
 
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
+    def check_password(self, password_plaintext):
+        return check_password_hash(self.password, password_plaintext)
 
 
 class Movie(db.Model):
     __table_name__ = "movie"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(100), index=True, nullable=False)
     director = db.Column(db.String(100), nullable=False)
     year = db.Column(db.Integer, nullable=False)
@@ -47,8 +59,51 @@ class Movie(db.Model):
     casts = db.relationship("Cast", backref="movie", lazy="dynamic")
     series = db.relationship("Series", backref="movie", lazy="dynamic")
 
+    def __init__(
+        self,
+        title: str,
+        director: str,
+        rating: str,
+        userId: int,
+        description: Optional[str] = "",
+        video_link: Optional[str] = "",
+    ):
+        """Create a new Video object using the title, director, rating, description, video_link of the video."""
+        self.title = title
+        self.director = director
+        self.rating = int(rating)
+        self.description = description
+        self.video_link = video_link
+        self.userId = userId
+
+    def update(
+        self,
+        new_title: str = "",
+        new_director: str = "",
+        new_year: str = "",
+        new_last_seen: str = "",
+        new_rating: str = "",
+        new_description: str = "",
+        new_video_link: str = "",
+    ):
+        """Update the attributes of the movie."""
+        if new_title:
+            self.title = new_title
+        if new_director:
+            self.director = new_director
+        if new_year:
+            self.year = new_year
+        if new_last_seen:
+            self.last_seen = new_last_seen
+        if new_rating:
+            self.rating = new_rating
+        if new_description:
+            self.description = new_description
+        if new_video_link:
+            self.video_link = new_video_link
+
     def __repr__(self):
-        return f"<id: {self.id}, title: {self.title}, director: {self.director} "
+        return f"<Movie: {self.title}"
 
 
 class Tag(db.Model):
@@ -84,6 +139,7 @@ class Series(db.Model):
         return f"<id: {self.id}, series: {self.series}, movieId: {self.movieId}"
 
 
+# Flask-Login configuration
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))

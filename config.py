@@ -1,23 +1,37 @@
 import os
+from pathlib import Path
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+# Determine the folder of the top-level directory of this project
+BASEDIR = Path.cwd()
 
 
 class Config(object):
+    FLASK_ENV = "development"
+    DEBUG = False
     TESTING = False
     SECRET_KEY = os.environ.get("SECRET_KEY")
+    # Database connection
+    if os.environ.get("DATABASE_URL"):
+        SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL").replace("://", "postgresql://", 1)
+    else:
+        SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(BASEDIR, "app.db")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # OAuth
+    OAUTHLIB_INSECURE_TRANSPORT = True
+    # Logging
+    LOG_WITH_GUNICORN = os.environ.get("LOG_WITH_GUNICORN", default=False)
 
 
 class ProductionConfig(Config):
-    DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    FLASK_ENV = "production"
 
 
 class DevelopmentConfig(Config):
-    ENV = "development"
-    DEVELOPMENT = True
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, os.environ.get("DATABASE_URL"))
-    OAUTHLIB_INSECURE_TRANSPORT = True
-    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    DEBUG = True
+
+
+class TestingConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        "TEST_DATABASE_URI", default="sqlite:///" + os.path.join(BASEDIR, "test.db")
+    )

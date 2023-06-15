@@ -5,8 +5,28 @@ from flask import Blueprint, redirect, render_template, session, url_for, reques
 from webapp.movie.forms import MovieForm, EditMovieForm, AddTagsForm
 from webapp.models import Movie, User, Tag, Cast, Series
 from flask import current_app
+from pydantic import BaseModel, validatonError, validator
 
 bp = Blueprint("movie", __name__, template_folder="templates", static_folder="static")
+
+
+# --------------
+# Helper Classes
+# --------------
+
+
+class MovieModel(BaseModel):
+    """Class for parsing new movie data from a form."""
+
+    title: str
+    director: str
+    rating: int
+
+    @validator("rating")
+    def movie_rating_check(cls, value):
+        if value not in range(1, 6):
+            raise ValueError("Movie rating must be a whole number between 1 and 5")
+        return value
 
 
 @bp.errorhandler(404)
