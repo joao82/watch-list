@@ -4,6 +4,7 @@ test.db
 *.pyc
 .DS_Store
 .vscode
+.gitignore
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
