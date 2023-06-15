@@ -1,9 +1,7 @@
-migrations
-venv
+migrations/
 app.db
 test.db
 *.pyc
-.env
 .DS_Store
 .vscode
 
@@ -63,6 +61,7 @@ coverage.xml
 .mypy_cache/
 pytestdebug.log
 error.log
+.coverage
 
 # Translations
 *.mo
@@ -109,17 +108,6 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
-# Environments
-.env/
-.venv/
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-pythonenv*
-.vscode
-
 # Spyder project settings
 .spyderproject
 .spyproject
@@ -155,3 +143,13 @@ dmypy.json
 pyvenv.cfg
 .venv
 pip-selfcheck.json
+.env/
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+pythonenv*
+.vscode
+.env
