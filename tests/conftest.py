@@ -10,13 +10,20 @@ from webapp.models import User, Movie, Tag, Cast, Series
 
 @pytest.fixture(scope="module")
 def new_user():
-    user = User("joao82@gmail.com", "FlaskIsAwesome")
+    user = User(email="joao82@gmail.com", password_plaintext="FlaskIsAwesome")
     return user
 
 
 @pytest.fixture(scope="module")
 def new_movie():
-    movie = Movie("Fast & Furious 9", "Justin Lin", 2020, 1)
+    movie = Movie(
+        title="Fast & Furious 9",
+        director="Justin Lin",
+        year=2020,
+        description="Hobbs has Dominic and Brian reassemble their crew to take down a team of mercenaries: Dominic unexpectedly gets sidetracked with facing his presumed deceased girlfriend, Letty.",
+        video_link="https://www.youtube.com/embed/dKi5XoeTN0k",
+        userId=1,
+    )
     return movie
 
 
@@ -51,14 +58,24 @@ def test_client():
 @pytest.fixture(scope="module")
 def init_database(test_client):
     db.create_all()
-    default_user = User(email="patkennedy79@gmail.com", password_plaintext="FlaskIsAwesome")
-    second_user = User(email="patrick@yahoo.com", password_plaintext="FlaskIsTheBest987")
+
+    default_user = User(email="test@test.com", password_plaintext="testpassword")
     db.session.add(default_user)
-    db.session.add(second_user)
     db.session.commit()
 
-    movie1 = Movie(title="Fast & Furious 9", director="John Doe", year=2010, userId=1)
-    db.session.add(movie1)
+    second_user = User(email="test2@test.com", password_plaintext="testpassword")
+    db.session.add(second_user)
+
+    default_movie = Movie(
+        title="Fast Furious 9",
+        director="Justin Lin",
+        year=2020,
+        description="Hobbs has Dominic and Brian reassemble their crew to take down a team of mercenaries: Dominic unexpectedly gets sidetracked with facing his presumed deceased girlfriend, Letty.",
+        video_link="https://www.youtube.com/embed/dKi5XoeTN0k",
+        userId=1,
+    )
+
+    db.session.add(default_movie)
     db.session.commit()
 
     yield
@@ -67,21 +84,21 @@ def init_database(test_client):
 
 
 @pytest.fixture(scope="function")
-def log_in_default_user(test_client):
-    test_client.post("/login", data={"email": "patkennedy79@gmail.com", "password": "FlaskIsAwesome"})
+def log_in_default_user(test_client, init_database):
+    test_client.post("/auth/login", data={"email": "test@test.com", "password": "testpassword"})
     # this is where the testing happens!
     yield
     # Log out the user
-    test_client.get("/logout")
+    test_client.get("/auth/logout")
 
 
 @pytest.fixture(scope="function")
-def log_in_second_user(test_client):
-    test_client.post("login", data={"email": "codingdevz@gmail.com", "password": "FlaskIsTheBest"})
+def log_in_second_user(test_client, init_database):
+    test_client.post("auth/login", data={"email": "test2@test.com", "password": "testpassword"})
     # this is where the testing happens!
     yield
     # Log out the user
-    test_client.get("/logout")
+    test_client.get("/auth/logout")
 
 
 @pytest.fixture(scope="module")

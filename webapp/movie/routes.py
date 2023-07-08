@@ -34,7 +34,7 @@ def movie_rating_check(value: int, movie: MovieModel) -> int:
     if value not in range(1, 6):
         error = "Movie rating must be a whole number between 1 and 5"
         current_app.logger.critical(f"Error while rating the movie: {movie.title} - {error}")
-        abort(403, error)
+        abort(500, error)
     return value
 
 
@@ -55,7 +55,6 @@ def page_forbidden(e):
 
 @bp.route("/")
 def home():
-    # If the user is already logged in, redirect to the list of books
     if current_user.is_authenticated:
         return redirect(url_for("movie.index"))
 
@@ -157,6 +156,12 @@ def edit_movie(movieId):
     movie = Movie.query.get_or_404(movieId)
     form = EditMovieForm(obj=movie)
 
+    if movie is None:
+        abort(404)
+
+    if movie.userId != current_user.id:
+        abort(500)
+
     if form.validate_on_submit():
         try:
             movie.title = form.title.data
@@ -166,9 +171,10 @@ def edit_movie(movieId):
             movie.video_link = form.video_link.data
 
             db.session.commit()
+
         except Exception as e:
             db.session.rollback()
-            current_app.logger.critical(f"Error while editing the movie: {movie.title.data} - {e}")
+            current_app.logger.critical(f"Error while editing the movie: {movie.title} - {e}")
             current_app.logger.exception(e)
             flash("There was an error while editing your movie. Try again later.", "danger")
             return redirect(url_for("movie.edit_movie", movieId=movie.id))
