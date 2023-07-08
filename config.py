@@ -9,12 +9,12 @@ class Config(object):
     FLASK_ENV = "development"
     DEBUG = False
     TESTING = False
-    SECRET_KEY = os.environ.get("SECRET_KEY")
+    SECRET_KEY = os.environ.get("SECRET_KEY", default="BAD_SECRET_KEY")
     # Database connection
     if os.environ.get("DATABASE_URL"):
         SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL").replace("://", "postgresql://", 1)
     else:
-        SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(BASEDIR, "app.db")
+        SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(BASEDIR, "instance/app.db")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # OAuth
     OAUTHLIB_INSECURE_TRANSPORT = True
@@ -33,5 +33,6 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get(
-        "TEST_DATABASE_URI", default="sqlite:///" + os.path.join(BASEDIR, "test.db")
+        "TEST_DATABASE_URI", default="sqlite:///" + os.path.join(BASEDIR, "instance/test.db")
     )
+    WTF_CSRF_ENABLED = False

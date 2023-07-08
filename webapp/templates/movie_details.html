@@ -10,16 +10,6 @@
 <div class="container">
     <header class="movie_header">
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <ul class=flashes>
-            {% for category, message in messages %}
-            <span class="form_flash form_flash--{{category}}"> {{ message }}</span>
-            {% endfor %}
-            </ul>
-        {% endif %}
-        {% endwith %}
-
         <div class="header_row">
             <div class="movie_name">
                 <h1>{{ movie.title }}</h1>

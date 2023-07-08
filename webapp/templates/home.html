@@ -1,0 +1,23 @@
+{% extends "layout.html" %} {% block head_content %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/movies.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/forms.css') }}"
+/>
+{% endblock head_content %} {% block main_content %}
+<div class="container">
+  <header class="content-text">
+    <h1>Welcome to the <strong>Flask User Management Example!</strong></h1>
+    <p>
+      <em>Need an account? </em
+      ><a href="{{ url_for('auth.register') }}">Register!</a>
+    </p>
+    <p>
+      <em>Existing user? </em><a href="{{ url_for('auth.login') }}">Login!</a>
+    </p>
+  </header>
+</div>
+{% endblock main_content %}

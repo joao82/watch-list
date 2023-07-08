@@ -9,15 +9,6 @@
 />
 {% endblock %} {% block main_content %} {% if movies_data %}
 
-{% with messages = get_flashed_messages(with_categories=true) %} {% if
-messages %}
-<ul class="flashes">
-  {% for category, message in messages %}
-  <span class="form_flash form_flash--{{category}}"> {{ message }}</span>
-  {% endfor %}
-</ul>
-{% endif %} {% endwith %}
-
 <table class="table">
   <colgroup>
     <col style="width: 60%" />
@@ -44,6 +35,12 @@ messages %}
           href="{{ url_for('movie.movie', movieId=movie.id) }}"
           class="table_link"
           >View</a
+        >
+        <a
+          onclick="return confirm('Are you sure you want to delete this movie?');"
+          href="{{ url_for('movie.delete_movie', movieId=movie.id) }}"
+          class="table_link"
+          >Delete</a
         >
       </td>
     </tr>

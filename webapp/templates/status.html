@@ -1,0 +1,19 @@
+{% extends "layout.html" %} {% block styling %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/user_profile_style.css') }}"
+/>
+{% endblock %} {% block content %}
+<div class="card">
+  <div class="card-heading">
+    <h2>Status</h2>
+  </div>
+  <div class="card-body">
+    <p>Web Application: Active</p>
+    <p>Configuration Type: {{ config_type }}</p>
+    <p>Database initialized: {{ database_status }}</p>
+    <p>Database `user` table created: {{ database_users_table_status }}</p>
+    <p>Database `movie` table created: {{ database_movies_table_status }}</p>
+  </div>
+</div>
+{% endblock %}

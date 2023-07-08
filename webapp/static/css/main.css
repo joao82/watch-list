@@ -210,3 +210,43 @@ body {
 .link:hover {
   text-decoration: underline;
 }
+
+/* Message Styling
+ *****************/
+.close-btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.5s;
+  background: var(--font-color);
+  line-height: 1;
+  color: white;
+}
+
+.close-btn svg {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+}
+
+.close-btn:hover {
+  background: white;
+  color: black;
+}
+
+.flash-message {
+  background: #38cfd9;
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem var(--gutters);
+  transition: opacity 1s;
+}
+
+.flash-message p,
+.flash-message span {
+  font-size: 1.1rem;
+}
