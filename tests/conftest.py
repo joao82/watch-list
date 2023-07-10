@@ -2,6 +2,7 @@ import os
 import pytest
 from webapp import create_app, db
 from webapp.models import User, Movie, Tag, Cast, Series
+import multiprocessing
 
 # --------
 # Fixtures
@@ -109,3 +110,30 @@ def cli_test_client():
     runner = flask_app.test_cli_runner()
     # this is where the testing happens!
     yield runner
+
+
+@pytest.fixture
+def app():
+    multiprocessing.set_start_method("fork")
+    app = create_app()
+
+    with app.app_context():
+        db.create_all()
+        default_user = User(email="test33@test.com", password_plaintext="testpassword")
+        default_movie = Movie(
+            title="Fast Furious 9",
+            director="John Doe",
+            year=2006,
+            description="Action movie",
+            video_link="www.google.com",
+            userId=1,
+        )
+        db.session.add_all([default_user, default_movie])
+        db.session.commit()
+
+    yield app
+
+
+@pytest.fixture()
+def client(app):
+    return app.test_client()

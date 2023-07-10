@@ -1,18 +1,34 @@
 import re
+from flask import url_for
+from playwright.sync_api import Playwright, Page, expect
+
+# --------------
+# Home page
+# --------------
 
 
-def test_home_page(test_client):
+def test_home_page_not_logged_in(test_client):
     """
     GIVEN a Flask application configured for testing and the user logged in
     WHEN the '/' page is requested (GET)
     THEN check the response is valid
     """
     response = test_client.get("/")
+
     assert response.status_code == 200
     assert b"Welcome to the" in response.data
     assert b"Flask User Management Example!" in response.data
     assert b"Need an account?" in response.data
     assert b"Existing user?" in response.data
+
+
+def test_home_page_logged_in(test_client, log_in_default_user):
+    response = test_client.get("/", follow_redirects=True)
+
+    assert response.status_code == 200
+    assert b"Fast Furious 9" in response.data
+    assert b"Justin Lin" in response.data
+    assert b"2020" in response.data
 
 
 def test_home_page_post(test_client):
@@ -22,8 +38,14 @@ def test_home_page_post(test_client):
     THEN check that a '405' (Method Not Allowed) status code is returned
     """
     response = test_client.post("/")
+
     assert response.status_code == 405
     assert b"Flask User Management Example!" not in response.data
+
+
+# --------------
+# Index page
+# --------------
 
 
 def test_index_page_not_logged_in(test_client):
@@ -42,6 +64,26 @@ def test_index_page_logged_in(test_client, init_database, log_in_default_user):
     assert b"2020" in response.data
 
 
+def test_index_page_logged_in_no_movies_added(test_client):
+    test_client.post(
+        "/auth/register",
+        data={"email": "test22@test.com", "password": "testpassword", "confirm_password": "testpassword"},
+    )
+    test_client.post("/auth/login", data={"email": "test22@test.com", "password": "testpassword"})
+    response = test_client.get("/index", follow_redirects=True)
+
+    assert response.status_code == 200
+    assert b"You haven't added any movies" in response.data
+    assert b"Fast Furious 9" not in response.data
+    assert b"Justin Lin" not in response.data
+    assert b"2020" not in response.data
+
+
+# --------------
+# Add movie form page
+# --------------
+
+
 def test_get_add_movie_page(test_client, init_database, log_in_default_user):
     response = test_client.get("/add")
     assert response.status_code == 200
@@ -56,7 +98,7 @@ def test_get_add_movie_page(test_client, init_database, log_in_default_user):
     assert b"Add Movie" in response.data
 
 
-def test_get_add_movie_page_not_logged_in(test_client):
+def test_get_add_movie_not_logged_in(test_client):
     response = test_client.get("/add", follow_redirects=True)
     assert response.status_code == 200
     assert b"Add a Book" not in response.data
@@ -65,7 +107,7 @@ def test_get_add_movie_page_not_logged_in(test_client):
     assert b"Password" in response.data
 
 
-def test_post_add_movie_page(test_client, init_database, log_in_default_user):
+def test_post_add_movie(test_client, init_database, log_in_default_user):
     response = test_client.post(
         "/add",
         data={"title": "The Guest List", "director": "Lucy Foley", "year": 2010, "movieId": 1},
@@ -74,7 +116,7 @@ def test_post_add_movie_page(test_client, init_database, log_in_default_user):
     assert response.status_code == 200
 
 
-def test_post_add_movie_page_not_logged_in(test_client):
+def test_post_add_movie_not_logged_in(test_client):
     response = test_client.post(
         "/add",
         data={"title": "The Guest List", "director": "Lucy Foley", "year": 2010},
@@ -88,7 +130,58 @@ def test_post_add_movie_page_not_logged_in(test_client):
     assert b"Password" in response.data
 
 
-def test_post_rating_movie_page_invalid_movie_rating(test_client, init_database, log_in_default_user):
+def test_post_add_movie_invalid_year_movie_field(test_client, init_database, log_in_default_user):
+    response = test_client.post(
+        "/add",
+        data={"title": "The Guest List", "director": "Lucy Foley", "year": "lucy", "movieId": 2},
+    )
+    assert response.status_code == 200
+    assert b"Error with movie data submitted!" in response.data
+    assert b"Fast Furious 9" not in response.data
+
+
+def test_post_add_movie_missing_required_fields(test_client, init_database, log_in_default_user):
+    response = test_client.post(
+        "/add",
+        data={"title": "The Guest List", "director": "", "year": "", "movieId": 2},
+    )
+    assert response.status_code == 200
+    assert b"Error with movie data submitted!" in response.data
+    assert b"Fast Furious 9" not in response.data
+
+
+# --------------
+# Single movie page
+# --------------
+
+
+def test_get_single_movie_page_logged_in(test_client, init_database, log_in_default_user):
+    response = test_client.get("/movie/1")
+
+    assert response.status_code == 200
+    assert b"Fast Furious 9" in response.data
+    assert b"Hobbs has Dominic and Brian reassemble their crew" in response.data
+    assert b"Not watched yet" in response.data
+
+
+def test_get_single_movie_page_not_logged_in(
+    test_client,
+    init_database,
+):
+    response = test_client.get("/movie/1")
+
+    assert response.status_code == 302
+    assert b"Fast Furious 9" not in response.data
+    assert b"Hobbs has Dominic and Brian reassemble their crew" not in response.data
+    assert b"Not watched yet" not in response.data
+
+
+# --------------
+# Rating a movie
+# --------------
+
+
+def test_post_rating_movie_invalid_movie_rating(test_client, init_database, log_in_default_user):
     response = test_client.post(
         "/movie/1/6",
         data={"rating": 6},
@@ -99,20 +192,74 @@ def test_post_rating_movie_page_invalid_movie_rating(test_client, init_database,
     assert b"Fast & Furious 9" not in response.data
 
 
-def test_post_add_movie_page_invalid_movie_field():
-    pass
+def test_post_rating_movie_logged_in(test_client, init_database, log_in_default_user):
+    response = test_client.post(
+        "/movie/1/5",
+        data={"rating": 5},
+        follow_redirects=True,
+    )
+    assert response.status_code == 200
+    assert b"OOOOPS! Something went wrong on the server." not in response.data
+    assert b"The administrator has been notified. Sorry for the inconvenience!" not in response.data
+    assert b"Fast Furious 9" in response.data
+    assert b"Hobbs has Dominic and Brian reassemble their crew" in response.data
+    assert b"Not watched yet" in response.data
 
 
-def test_get_single_movie_page_logged_in():
-    pass
+def test_post_rating_movie_not_logged_in(test_client, init_database):
+    response = test_client.post(
+        "/movie/1/5",
+        data={"rating": 5},
+        follow_redirects=True,
+    )
+    assert response.status_code == 200
+    assert b"Email" in response.data
+    assert b"Password" in response.data
 
 
-def test_get_single_movie_page_not_logged_in():
-    pass
+# --------------
+# Watch today movie
+# --------------
 
 
-def test_get_home_page_not_logged_in():
-    pass
+def test_post_watched_date_movie_invalid_date(test_client, init_database, log_in_default_user):
+    response = test_client.post(
+        "/movie/1/watch",
+        data={"last_seen": "2023-07-08 48:19:29.808763"},
+    )
+    assert response.status_code == 302
+
+
+def test_post_watched_date_movie_logged_in(test_client, init_database, log_in_default_user):
+    response = test_client.post(
+        "/movie/1/watch",
+        data={"last_seen": "2023-07-08 18:19:29.808763"},
+        follow_redirects=True,
+    )
+    assert response.status_code == 200
+
+
+def test_post_watched_date_movie_not_logged_in(test_client, init_database):
+    response = test_client.post(
+        "/movie/1/watch",
+        data={"last_seen": "2023-07-08 18:19:29.808763"},
+        follow_redirects=True,
+    )
+    assert response.status_code == 200
+
+
+def test_post_watched_date_movie_not_found(test_client, init_database):
+    response = test_client.post(
+        "/movie/12/watch",
+        data={"last_seen": "2023-07-08 18:19:29.808763"},
+        follow_redirects=True,
+    )
+    assert response.status_code == 200
+
+
+# --------------
+# Edit movie form page
+# --------------
 
 
 def test_get_edit_movie_page_logged_in_own_movie(test_client, init_database, log_in_default_user):
@@ -208,3 +355,93 @@ def test_post_edit_movie_page_invalid_movie(test_client, init_database, log_in_d
     )
     assert response.status_code == 404
     assert not re.search(r"The movie has been updated successfully!", str(response.data))
+
+
+# --------------
+# Add tags form page
+# --------------
+
+
+def test_get_add_tags_page_logged_in_own_movie(test_client, init_database, log_in_default_user):
+    response = test_client.get("/add/tags/1")
+    assert response.status_code == 200
+
+
+def test_get_add_tags_page_logged_in_not_own_movie(test_client, init_database, log_in_second_user):
+    response = test_client.get("/add/tags/1")
+    assert response.status_code == 200
+
+
+def test_get_add_tags_page_not_logged_in(test_client, init_database):
+    response = test_client.get("/add/tags/1")
+    assert response.status_code == 302
+
+
+def test_post_add_tags_invalid_movie(test_client, init_database, log_in_default_user):
+    response = test_client.post(
+        "/add/tags/12",
+        data={"title": "Malibu Rising 2", "author": "Taylor J. Reid", "year": "2023"},
+        follow_redirects=True,
+    )
+
+    assert response.status_code == 404
+
+
+def test_post_add_tags(test_client, init_database, log_in_default_user):
+    response = test_client.post(
+        "/add/tags/1",
+        data={"tag": "tag1 tag2 tag3"},
+        follow_redirects=True,
+    )
+
+    assert response.status_code == 200
+
+
+# --------------
+# PLAYWRIGHT TESTS
+# --------------
+
+
+def test_take_screenshot(playwright: Playwright) -> None:
+    browser = playwright.chromium.launch(headless=False)
+    context = browser.new_context()
+    page = context.new_page()
+    page.goto("http://localhost:5000/")
+
+    page.screenshot(path="screenshots/index.png", full_page=True)
+
+
+def test_homepage_loads(live_server, page):
+    page.goto(url_for("movie.home", _external=True))
+    expect(page).to_have_selector("h1", text="Welcome")
+
+
+def test_login_add_movie(playwright: Playwright) -> None:
+    browser = playwright.chromium.launch(headless=False)
+    context = browser.new_context()
+    page = context.new_page()
+    page.goto("http://localhost:5000/")
+
+    # Login
+    page.get_by_role("link", name="Login!").click()
+    page.locator('input[name="email"]').fill("joao82@gmail.com")
+    page.locator('input[name="password"]').fill("090236")
+    page.locator('input[name="password"]').press("Enter")
+
+    # Add movie
+    page.get_by_role("link", name="+").click()
+    page.locator('input[name="title"]').fill("movie 1")
+    page.locator('input[name="director"]').fill("director 1")
+    page.get_by_role("spinbutton").fill("2020")
+    page.get_by_label("Cast").fill("cast 2")
+    page.get_by_label("Cast").press("Enter")
+    page.get_by_label("Cast").fill("cast 2\ncast 1")
+    page.get_by_label("Series").fill("series 1")
+    page.get_by_label("Series").press("Enter")
+    page.get_by_label("Series").fill("series 1\nseries 2")
+    page.get_by_label("Tags").fill("tag 1")
+    page.get_by_label("Tags").press("Enter")
+    page.get_by_label("Tags").fill("tag 1\ntag 2")
+    page.get_by_label("Description").fill("description of the movie")
+    page.locator('input[name="video_link"]').fill("www.google.com")
+    page.get_by_role("button", name="Add Movie").click()

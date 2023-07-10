@@ -27,7 +27,7 @@ def page_forbidden(e):
 @bp.route("/register", methods=["POST", "GET"])
 def register():
     if current_user.is_authenticated:
-        flash("Already logged in!  Redirecting to your User Profile page...")
+        flash("Already logged in! Redirecting to your User Profile page...")
         return redirect(url_for("movie.index", user_id=current_user.id))
 
     form = RegisterForm()
@@ -48,7 +48,7 @@ def register():
 @bp.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
-        flash("Already logged in!  Redirecting to your User Profile page...")
+        flash("Already logged in! Redirecting to your User Profile page...")
         return redirect(url_for("movie.index", user_id=current_user.id))
 
     form = LoginForm()
