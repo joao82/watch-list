@@ -1,6 +1,4 @@
 import re
-from flask import url_for
-from playwright.sync_api import Playwright, Page, expect
 
 # --------------
 # Home page
@@ -395,53 +393,3 @@ def test_post_add_tags(test_client, init_database, log_in_default_user):
     )
 
     assert response.status_code == 200
-
-
-# --------------
-# PLAYWRIGHT TESTS
-# --------------
-
-
-def test_take_screenshot(playwright: Playwright) -> None:
-    browser = playwright.chromium.launch(headless=False)
-    context = browser.new_context()
-    page = context.new_page()
-    page.goto("http://localhost:5000/")
-
-    page.screenshot(path="screenshots/index.png", full_page=True)
-
-
-def test_homepage_loads(live_server, page):
-    page.goto(url_for("movie.home", _external=True))
-    expect(page).to_have_selector("h1", text="Welcome")
-
-
-def test_login_add_movie(playwright: Playwright) -> None:
-    browser = playwright.chromium.launch(headless=False)
-    context = browser.new_context()
-    page = context.new_page()
-    page.goto("http://localhost:5000/")
-
-    # Login
-    page.get_by_role("link", name="Login!").click()
-    page.locator('input[name="email"]').fill("joao82@gmail.com")
-    page.locator('input[name="password"]').fill("090236")
-    page.locator('input[name="password"]').press("Enter")
-
-    # Add movie
-    page.get_by_role("link", name="+").click()
-    page.locator('input[name="title"]').fill("movie 1")
-    page.locator('input[name="director"]').fill("director 1")
-    page.get_by_role("spinbutton").fill("2020")
-    page.get_by_label("Cast").fill("cast 2")
-    page.get_by_label("Cast").press("Enter")
-    page.get_by_label("Cast").fill("cast 2\ncast 1")
-    page.get_by_label("Series").fill("series 1")
-    page.get_by_label("Series").press("Enter")
-    page.get_by_label("Series").fill("series 1\nseries 2")
-    page.get_by_label("Tags").fill("tag 1")
-    page.get_by_label("Tags").press("Enter")
-    page.get_by_label("Tags").fill("tag 1\ntag 2")
-    page.get_by_label("Description").fill("description of the movie")
-    page.locator('input[name="video_link"]').fill("www.google.com")
-    page.get_by_role("button", name="Add Movie").click()

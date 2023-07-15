@@ -1,4 +1,10 @@
 import re
+import pytest
+import requests
+import requests_mock
+from requests.exceptions import HTTPError
+
+# from webapp import some_func
 
 """
 This file (test_users.py) contains the functional tests for the `users` blueprint.
@@ -221,11 +227,6 @@ def test_status_page(test_client):
     response = test_client.get("/auth/status")
 
     assert response.status_code == 200
-    # assert b"Web Application: Active" in response.data
-    # assert b"Configuration Type: config.TestingConfig" in response.data
-    # assert b"Database initialized: True" in response.data
-    # assert b"Database `users` table created: True" in response.data
-    # assert b"Database `books` table created: True" in response.data
 
 
 def test_page_not_found(test_client):
@@ -244,9 +245,11 @@ def test_page_not_found(test_client):
     assert b"Don't have an account? Register here" not in response.data
 
 
-def test_internal_error(test_client):
-    pass
-
-
-def test_page_forbidden(test_client):
-    pass
+def test_page_not_found_404(test_client):
+    response = test_client.get("/auth/does/not/exist")
+    assert response.status_code == 404
+    if response.status_code == 404:
+        assert b"404 - Page Not Found" in response.data
+        assert b"Go to home" in response.data
+        assert b"Log in" in response.data
+        assert b"Register" in response.data

@@ -1,3 +1,6 @@
+import re
+
+
 def test_new_user(new_user):
     """
     GIVEN a User model
@@ -37,6 +40,12 @@ def test_generate_password_hash(new_user):
     assert new_user.password_hashed != "FlaskIsAwesome"
     assert new_user.check_password("FlaskIsAwesome") is True
     assert new_user.check_password("FlaskIsNotAwesome") is False
+
+
+def test_is_password_correct(new_user):
+    password = "FlaskIsAwesome"
+    assert new_user.is_password_correct(password) == True
+    assert new_user.check_password("FlaskIsAwesome") is True
 
 
 def test_user_id(new_user):
@@ -94,3 +103,50 @@ def test_update_movie(new_movie):
     assert movie.rating == 2
     assert movie.description == "description test"
     assert movie.video_link == "https://www.youtube.com/watch?v=ZQ-YX-5bAs0"
+
+
+def test_movie_repr(new_movie):
+    retval = repr(new_movie)
+    match = "<Movie: Fast & Furious 9>"
+    assert match == retval
+
+
+def test_user_repr(new_user):
+    retval = repr(new_user)
+    match = "<User: joao82@gmail.com>"
+    assert match == retval
+
+
+def test_tag_repr(new_tag):
+    retval = repr(new_tag)
+    match = "<id: None, tag: actions, movieId: 1"
+    assert match == retval
+
+
+def test_cast_repr(new_cast):
+    retval = repr(new_cast)
+    match = "<id: None, actor: Vin Diesel, movieId: 1"
+    assert match == retval
+
+
+def test_series_repr(new_series):
+    retval = repr(new_series)
+    match = "<id: None, series: Fast & Furious 10, movieId: 1"
+    assert match == retval
+
+
+# def test_load_user(new_user):
+#     retval = load_user(1)
+#     match = new_user.id
+#     assert match == retval
+
+
+def test_update_last_seen_movie(new_movie):
+    pass
+    # movie = new_movie
+
+    # movie.update(new_title="Fast NOT Furious")
+    # assert movie.title == "Fast NOT Furious"
+    # assert movie.director == "Justin Lin"
+    # assert movie.year == 2020
+    # assert movie.last_seen is not None

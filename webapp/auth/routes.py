@@ -19,11 +19,6 @@ def internal_error(e):
     return render_template("500.html"), 500
 
 
-@bp.errorhandler(403)
-def page_forbidden(e):
-    return render_template("403.html"), 500
-
-
 @bp.route("/register", methods=["POST", "GET"])
 def register():
     if current_user.is_authenticated:

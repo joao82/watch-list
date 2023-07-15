@@ -64,6 +64,10 @@ def home():
 @bp.route("/index")
 @login_required
 def index():
+    if not current_user.is_authenticated:
+        flash("You must be logged in to view your profile!", "danger")
+        return redirect(url_for("auth.login"))
+
     try:
         movies = Movie.query.filter_by(userId=current_user.id).all()
     except Exception as error:

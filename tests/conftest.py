@@ -15,7 +15,7 @@ def new_user():
     return user
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def new_movie():
     movie = Movie(
         title="Fast & Furious 9",
